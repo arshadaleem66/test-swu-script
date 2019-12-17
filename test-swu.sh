@@ -1,39 +1,51 @@
 #!/bin/bash
-
+  
 COUNT_FILE=/run/media/persistent/count
+OVERFLOW=3
+increment_count()
+{
+   i=`read_count`
+
+   if [ -z $i ]; then
+      i=0
+   fi
+   i=$((${i}+1))
+   echo $i > $COUNT_FILE
+   read_count
+}
+
+read_count()
+{
+   cat $COUNT_FILE
+}
 
 update() {
    /usr/bin/swupdate-progress -r -w &
    /bin/mount /dev/${1} /mnt/swupdate
-   swupdate-client -v /mnt/swupdate/compound-image.swu
+   swupdate-client -v /mnt/swupdate/update.swu
    umount /mnt/swupdate
 }
 
+
+
 # start the test
 
-COUNT=`cat $COUNT_FILE`
-echo "Value of count is: $COUNT"
+## check overflow
+## update in else
 
+COUNT=`read_count`
 if [ -z $COUNT ]; then
-   COUNT=1
-   echo $COUNT > $COUNT_FILE
-   echo "Value of count is: $COUNT in if.."
+   COUNT=`increment_count`
+   echo "update() count =$COUNT"
+   update
 
-elif [ $COUNT -eq 1 ]; then
-   COUNT=$((COUNT+1))
-   echo $COUNT > count
-   echo "update will be performed"
+elif  [ $COUNT -lt $OVERFLOW -a -n "$COUNT" ] ; then
+   COUNT=`increment_count`
+   echo "update() count = $COUNT"
+   update
+   #TODO: check_update_status
+   #TODO: save_status
 
 else
-
-#TODO: check_update_status
-#TODO: save_status
-
-   echo "update will be performed in else"
-   if [ $COUNT -gt 3 ]; then
-
-#TODO  print_the status
-
-      echo "COUNT is greater than 3 now"
-   fi
+   echo "Overflow exceeded"
 fi

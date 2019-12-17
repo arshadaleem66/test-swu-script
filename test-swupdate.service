@@ -1,0 +1,9 @@
+[Unit]
+Description=test-swupdate
+After=swupdate
+
+[Service]
+ExecStart=/run/media/persistent/test-swu.sh
+
+[Install]
+WantedBy=multi-user.target
