@@ -1,5 +1,7 @@
 #!/bin/bash
 
+COUNT_FILE=/run/media/persistent/count
+
 update() {
    /usr/bin/swupdate-progress -r -w &
    /bin/mount /dev/${1} /mnt/swupdate
@@ -9,15 +11,29 @@ update() {
 
 # start the test
 
-COUNT=cat count
-if [[ $COUNT -eq 1 ]] then
-   echo 2 > count
-   update
+COUNT=`cat $COUNT_FILE`
+echo "Value of count is: $COUNT"
+
+if [ -z $COUNT ]; then
+   COUNT=1
+   echo $COUNT > $COUNT_FILE
+   echo "Value of count is: $COUNT in if.."
+
+elif [ $COUNT -eq 1 ]; then
+   COUNT=$((COUNT+1))
+   echo $COUNT > count
+   echo "update will be performed"
+
 else
-   check_update_status
-   save_status
-   update
-   if (overflowed the count)
-      print_the status
+
+#TODO: check_update_status
+#TODO: save_status
+
+   echo "update will be performed in else"
+   if [ $COUNT -gt 3 ]; then
+
+#TODO  print_the status
+
+      echo "COUNT is greater than 3 now"
    fi
 fi
