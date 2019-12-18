@@ -21,30 +21,6 @@ increment_count()
 }
 
 read_count()
-root@imx8mqevk-mel:~# cat /run/media/persistent/test-swu.sh                                             
-#!/bin/bash
-DEV="sda1"
-COUNT_FILE=/run/media/persistent/count
-SYSTEM_FILE=/run/media/persistent/system
-OVERFLOW=6
-KERNEL_A="itbImageA"
-KERNEL_B="itbImageB"
-ROOTFS_A="2"
-ROOTFS_B="3"
-
-increment_count()
-{
-   i=`read_count`
-
-   if [ -z $i ]; then
-      i=0
-   fi
-   i=$((${i}+1))
-   echo $i > $COUNT_FILE
-   read_count
-}
-
-read_count()
 {
    cat $COUNT_FILE
 }
@@ -131,7 +107,7 @@ elif  [ $COUNT -lt $OVERFLOW -a -n "$COUNT" ] ; then
       echo "Compound Update Successful!"
    else
       echo "Compound Update Failed!" 
-      #TODO: Can define status 1 & 2, to indicate successful kernel/rootfs update but failed compound ue
+      #TODO: Can define status 1 & 2, to indicate successful kernel/rootfs update but failed compound update
    fi
 
    #TODO: save_status
